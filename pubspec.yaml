@@ -9,6 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  retrofit: ^4.7.3
+  dio: ^5.9.0
+  json_annotation: ^4.9.0
+
   flutter_launcher_icons: ^0.14.4
   flutter_screenutil: ^5.9.3
   flutter_svg: ^2.2.1
@@ -29,6 +33,10 @@ dev_dependencies:
   mockito: ^5.4.4
   build_runner: ^2.4.13
   bloc_test: ^9.1.7
+  retrofit_generator: ^10.0.1
+  json_serializable: ^6.10.0
+
+
 
 flutter:
   uses-material-design: true
