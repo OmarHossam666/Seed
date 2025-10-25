@@ -1,12 +1,13 @@
-import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:seed/features/authentication/data/models/user_model.dart';
 
 part 'question_dto.g.dart';
 
 @JsonSerializable()
-class QuestionDto extends Equatable {
+class QuestionDto{
 final String message;
-final User user;
+final UserModel user;
+
   const QuestionDto({
 
     required this.message,
