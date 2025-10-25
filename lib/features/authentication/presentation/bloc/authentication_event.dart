@@ -26,6 +26,7 @@ class SignUpRequested extends AuthenticationEvent {
   final String password;
   final String age;
   final String education;
+  final String? favoriteActivities;
 
   const SignUpRequested({
     required this.name,
@@ -33,10 +34,18 @@ class SignUpRequested extends AuthenticationEvent {
     required this.password,
     required this.age,
     required this.education,
+    this.favoriteActivities,
   });
 
   @override
-  List<Object?> get props => [name, email, password, age, education];
+  List<Object?> get props => [
+    name,
+    email,
+    password,
+    age,
+    education,
+    favoriteActivities,
+  ];
 }
 
 /// Event to logout
