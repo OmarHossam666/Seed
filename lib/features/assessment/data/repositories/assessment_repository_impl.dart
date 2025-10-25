@@ -2,14 +2,32 @@ import 'package:dartz/dartz.dart';
 import 'package:seed/core/error/failures.dart';
 import 'package:seed/core/repositories/base_repository.dart';
 import 'package:seed/core/utils/logger_service.dart';
+import 'package:seed/features/assessment/data/api/question_api.dart';
 import 'package:seed/features/assessment/domain/entities/assessment.dart';
+import 'package:seed/features/assessment/domain/entities/question_dto.dart';
 import 'package:seed/features/assessment/domain/repositories/assessment_repository.dart';
 
 /// Implementation of IAssessmentRepository using local storage
 class AssessmentRepositoryImpl implements IAssessmentRepository {
   final IPreferencesRepository preferencesRepository;
+  final QuestionApi questionApi; 
 
-  AssessmentRepositoryImpl(this.preferencesRepository);
+  AssessmentRepositoryImpl(this.preferencesRepository, this.questionApi);
+
+  @override
+  Future<Either<Failure, List<QuestionDto>>> fetchQuestions(
+      String category, String difficulty) async {
+    try {
+      final questions = await questionApi.fetchQuestions(
+         category, difficulty);
+      return Right(questions);
+    } catch (e, stackTrace) {
+      LoggerService.error('Error fetching questions', e, stackTrace);
+      return Left(
+        CacheFailure(message: 'Error fetching questions: ${e.toString()}'),
+      );
+    }
+  }
 
   @override
   Future<Either<Failure, void>> setAssessmentCompleted(

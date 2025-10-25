@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:seed/core/error/failures.dart';
 import 'package:seed/features/assessment/domain/entities/assessment.dart';
+import 'package:seed/features/assessment/domain/entities/question_dto.dart';
 
 /// Repository interface for assessment operations
 abstract class IAssessmentRepository {
@@ -18,4 +19,7 @@ abstract class IAssessmentRepository {
 
   /// Get all assessments with their completion status
   Either<Failure, List<Assessment>> getAllAssessments();
+
+  Future<Either<Failure, List<QuestionDto>>> fetchQuestions(
+      String category, String difficulty);
 }

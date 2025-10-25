@@ -4,7 +4,7 @@ import 'package:seed/core/utils/logger_service.dart';
 import 'package:seed/features/assessment/domain/entities/assessment.dart';
 import 'package:seed/features/assessment/domain/usecases/assessment_usecases.dart';
 import 'package:seed/features/assessment/presentation/bloc/assessment_event.dart';
-import 'package:seed/features/assessment/presentation/bloc/assessment_state.dart';
+import 'package:seed/features/assessment/presentation/bloc/assessment_state.dart' hide FetchQuestionsEvent;
 
 /// BLoC for managing assessment state
 class AssessmentBloc extends Bloc<AssessmentEvent, AssessmentState> {
@@ -12,18 +12,21 @@ class AssessmentBloc extends Bloc<AssessmentEvent, AssessmentState> {
   final SetAssessmentCompleted setAssessmentCompleted;
   final GetAllAssessments getAllAssessments;
   final ResetAssessmentProgress resetProgress;
+  final FetchQuestions fetchQuestions;
 
   AssessmentBloc({
     required this.getCompletedCount,
     required this.setAssessmentCompleted,
     required this.getAllAssessments,
     required this.resetProgress,
+    required this.fetchQuestions,
   }) : super(const AssessmentInitial()) {
     // Register event handlers
     on<LoadAssessmentProgress>(_onLoadProgress, transformer: restartable());
     on<CompleteAssessment>(_onCompleteAssessment, transformer: sequential());
     on<ResetAllAssessments>(_onResetProgress, transformer: droppable());
     on<CheckAllAssessmentsCompleted>(_onCheckAllCompleted);
+    on<FetchQuestionsEvent>(_onFetchQuestions);
   }
 
   /// Handle loading assessment progress
@@ -210,6 +213,42 @@ class AssessmentBloc extends Bloc<AssessmentEvent, AssessmentState> {
         stackTrace,
       );
       emit(AssessmentError('Failed to check completion: ${e.toString()}'));
+    }
+  }
+  /// Handle fetching questions
+  Future<void> _onFetchQuestions(
+    FetchQuestionsEvent event,
+    Emitter<AssessmentState> emit,
+  ) async {
+    try {
+      LoggerService.debug(
+        'AssessmentBloc: Fetching questions - Category: ${event.category}, Difficulty: ${event.difficulty}',
+      );
+      emit(const AssessmentLoading());
+
+      final result = await fetchQuestions(event.category, event.difficulty);
+
+      result.fold(
+        (failure) {
+          LoggerService.error(
+            'AssessmentBloc: Failed to fetch questions - ${failure.message}',
+          );
+          emit(AssessmentError(failure.message));
+        },
+        (questions) {
+          LoggerService.info(
+            'AssessmentBloc: Fetched ${questions.length} questions',
+          );
+          emit(QuestionsFetched(questions));
+        },
+      );
+    } catch (e, stackTrace) {
+      LoggerService.error(
+        'AssessmentBloc: Exception in _onFetchQuestions',
+        e,
+        stackTrace,
+      );
+      emit(AssessmentError('Failed to fetch questions: ${e.toString()}'));
     }
   }
 }

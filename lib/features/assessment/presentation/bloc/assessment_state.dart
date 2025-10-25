@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:seed/features/assessment/domain/entities/assessment.dart';
+import 'package:seed/features/assessment/domain/entities/question_dto.dart';
 
 /// Base class for all assessment states
 abstract class AssessmentState extends Equatable {
@@ -80,4 +81,24 @@ class AssessmentError extends AssessmentState {
 /// Reset successful
 class AssessmentReset extends AssessmentState {
   const AssessmentReset();
+}
+
+/// Questions fetched successfully
+class QuestionsFetched extends AssessmentState {
+  final List<QuestionDto> questions;
+
+  const QuestionsFetched(this.questions);
+
+  @override
+  List<Object?> get props => [questions];
+}
+/// Use case for fetching questions
+class FetchQuestionsEvent {
+  final String category;
+  final String difficulty;
+
+  const FetchQuestionsEvent({
+    required this.category,
+    required this.difficulty,
+  });
 }
