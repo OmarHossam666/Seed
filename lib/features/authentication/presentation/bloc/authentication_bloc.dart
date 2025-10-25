@@ -1,16 +1,28 @@
 import 'package:bloc/bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:seed/core/repositories/base_repository.dart';
 import 'package:seed/core/utils/logger_service.dart';
+import 'package:seed/features/authentication/domain/usecases/login_usecase.dart';
+import 'package:seed/features/authentication/domain/usecases/signup_usecase.dart';
 import 'package:seed/features/authentication/presentation/bloc/authentication_event.dart';
 import 'package:seed/features/authentication/presentation/bloc/authentication_state.dart';
 
 /// BLoC for managing authentication state
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  AuthenticationBloc() : super(const AuthenticationInitial()) {
-    // Register event handlers
-    on<LoginRequested>(_onLoginRequested);
-    on<SignUpRequested>(_onSignUpRequested);
-    on<LogoutRequested>(_onLogoutRequested);
+  final LoginUseCase loginUseCase;
+  final SignUpUseCase signUpUseCase;
+  final IPreferencesRepository preferencesRepository;
+
+  AuthenticationBloc({
+    required this.loginUseCase,
+    required this.signUpUseCase,
+    required this.preferencesRepository,
+  }) : super(const AuthenticationInitial()) {
+    // Register event handlers with sequential processing
+    on<LoginRequested>(_onLoginRequested, transformer: sequential());
+    on<SignUpRequested>(_onSignUpRequested, transformer: sequential());
+    on<LogoutRequested>(_onLogoutRequested, transformer: sequential());
     on<CheckAuthenticationStatus>(_onCheckAuthStatus);
   }
 
@@ -25,26 +37,59 @@ class AuthenticationBloc
       );
       emit(const AuthenticationLoading());
 
-      // Simulate authentication delay
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // TODO: Implement actual authentication logic
-      // For now, we'll simulate a successful login
-
-      LoggerService.info('AuthenticationBloc: Login successful');
-
-      emit(
-        Authenticated(
-          userId: 'user_123',
-          userName: 'Demo User',
-          email: event.email,
-        ),
+      final result = await loginUseCase(
+        email: event.email,
+        password: event.password,
       );
 
-      emit(const LoginSuccess('Login successful!'));
+      result.fold(
+        (failure) {
+          LoggerService.error(
+            'AuthenticationBloc: Login failed - ${failure.message}',
+          );
+          emit(AuthenticationError(failure.message));
+        },
+        (authResponse) async {
+          LoggerService.info('AuthenticationBloc: Login successful');
+
+          // Save token to local storage
+          await preferencesRepository.setString(
+            'auth_token',
+            authResponse.token,
+          );
+          await preferencesRepository.setString(
+            'user_id',
+            authResponse.user.id.toString(),
+          );
+          await preferencesRepository.setString(
+            'user_name',
+            authResponse.user.name,
+          );
+          await preferencesRepository.setString(
+            'user_email',
+            authResponse.user.email,
+          );
+
+          emit(
+            Authenticated(
+              userId: authResponse.user.id.toString(),
+              userName: authResponse.user.name,
+              email: authResponse.user.email,
+            ),
+          );
+
+          emit(const LoginSuccess('Login successful!'));
+        },
+      );
     } catch (e, stackTrace) {
-      LoggerService.error('AuthenticationBloc: Login failed', e, stackTrace);
-      emit(AuthenticationError('Login failed: ${e.toString()}'));
+      LoggerService.error(
+        'AuthenticationBloc: Unexpected error during login',
+        e,
+        stackTrace,
+      );
+      emit(
+        AuthenticationError('An unexpected error occurred: ${e.toString()}'),
+      );
     }
   }
 
@@ -59,17 +104,62 @@ class AuthenticationBloc
       );
       emit(const AuthenticationLoading());
 
-      // Simulate API call delay
-      await Future.delayed(const Duration(milliseconds: 500));
+      // Parse age to int
+      final age = int.tryParse(event.age) ?? 0;
+      if (age <= 0) {
+        emit(const AuthenticationError('Please enter a valid age'));
+        return;
+      }
 
-      // TODO: Implement actual signup logic
+      final result = await signUpUseCase(
+        name: event.name,
+        age: age,
+        email: event.email,
+        password: event.password,
+        education: event.education,
+        favoriteActivities: event.favoriteActivities ?? 'Web',
+      );
 
-      LoggerService.info('AuthenticationBloc: Signup successful');
+      result.fold(
+        (failure) {
+          LoggerService.error(
+            'AuthenticationBloc: Signup failed - ${failure.message}',
+          );
+          emit(AuthenticationError(failure.message));
+        },
+        (authResponse) async {
+          LoggerService.info('AuthenticationBloc: Signup successful');
 
-      emit(const SignUpSuccess('Account created successfully!'));
+          // Save token to local storage
+          await preferencesRepository.setString(
+            'auth_token',
+            authResponse.token,
+          );
+          await preferencesRepository.setString(
+            'user_id',
+            authResponse.user.id.toString(),
+          );
+          await preferencesRepository.setString(
+            'user_name',
+            authResponse.user.name,
+          );
+          await preferencesRepository.setString(
+            'user_email',
+            authResponse.user.email,
+          );
+
+          emit(const SignUpSuccess('Account created successfully!'));
+        },
+      );
     } catch (e, stackTrace) {
-      LoggerService.error('AuthenticationBloc: Signup failed', e, stackTrace);
-      emit(AuthenticationError('Signup failed: ${e.toString()}'));
+      LoggerService.error(
+        'AuthenticationBloc: Unexpected error during signup',
+        e,
+        stackTrace,
+      );
+      emit(
+        AuthenticationError('An unexpected error occurred: ${e.toString()}'),
+      );
     }
   }
 
@@ -82,7 +172,11 @@ class AuthenticationBloc
       LoggerService.debug('AuthenticationBloc: Logout requested');
       emit(const AuthenticationLoading());
 
-      // TODO: Clear authentication data
+      // Clear authentication data
+      await preferencesRepository.remove('auth_token');
+      await preferencesRepository.remove('user_id');
+      await preferencesRepository.remove('user_name');
+      await preferencesRepository.remove('user_email');
 
       LoggerService.info('AuthenticationBloc: Logout successful');
       emit(const Unauthenticated());
@@ -100,10 +194,21 @@ class AuthenticationBloc
     try {
       LoggerService.debug('AuthenticationBloc: Checking auth status');
 
-      // TODO: Check if user is authenticated (e.g., check token validity)
+      final token = preferencesRepository.getString('auth_token');
 
-      // For now, assume unauthenticated
-      emit(const Unauthenticated());
+      if (token != null && token.isNotEmpty) {
+        final userId = preferencesRepository.getString('user_id') ?? '';
+        final userName =
+            preferencesRepository.getString('user_name') ?? '';
+        final userEmail =
+            preferencesRepository.getString('user_email') ?? '';
+
+        emit(
+          Authenticated(userId: userId, userName: userName, email: userEmail),
+        );
+      } else {
+        emit(const Unauthenticated());
+      }
     } catch (e, stackTrace) {
       LoggerService.error(
         'AuthenticationBloc: Status check failed',
