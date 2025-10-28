@@ -4,8 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:seed/core/constants/app_assets.dart';
 import 'package:seed/core/constants/app_colors.dart';
 import 'package:seed/core/constants/app_styles.dart';
+import 'package:seed/core/widgets/custom_search_bar.dart';
 
-class ScreenHeader extends StatelessWidget {
+class ScreenHeader extends StatefulWidget {
   const ScreenHeader({
     super.key,
     required this.title,
@@ -14,6 +15,8 @@ class ScreenHeader extends StatelessWidget {
     this.icon,
     this.showBackButton = true,
     this.showStatusBar = true,
+    this.showSearchBar = false,
+    this.onSearch,
   });
 
   final String title;
@@ -22,11 +25,19 @@ class ScreenHeader extends StatelessWidget {
   final String? icon;
   final bool showBackButton;
   final bool showStatusBar;
+  final bool showSearchBar;
+  final void Function(String)? onSearch;
 
+  @override
+  State<ScreenHeader> createState() => _ScreenHeaderState();
+}
+
+class _ScreenHeaderState extends State<ScreenHeader> {
+  final TextEditingController _searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     // Assessment screen style (with icon, no background image)
-    if (icon != null && backgroundImage == null) {
+    if (widget.icon != null && widget.backgroundImage == null) {
       return _buildAssessmentHeader(context);
     }
 
@@ -41,23 +52,26 @@ class ScreenHeader extends StatelessWidget {
       child: Column(
         children: [
           // Back button
-          if (showBackButton)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: GestureDetector(
-                onTap: () => context.pop(),
-                child: Image.asset(
-                  AppAssets.backButtonIcon,
-                  width: 50.w,
-                  height: 50.h,
+          if (widget.showBackButton)
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => context.pop(),
+                  child: Image.asset(
+                    AppAssets.backButtonIcon,
+                    width: 50.w,
+                    height: 50.h,
+                  ),
                 ),
-              ),
+                SizedBox(width: 12.w),
+                Expanded(child: CustomSearchBar(controller: _searchController)),
+              ],
             ),
           // Icon
-          if (icon != null) ...[
+          if (widget.icon != null) ...[
             SizedBox(height: 20.h),
             Image.asset(
-              icon!,
+              widget.icon!,
               width: 100.w,
               height: 100.h,
               color: AppColors.background,
@@ -66,8 +80,8 @@ class ScreenHeader extends StatelessWidget {
           // Title
           SizedBox(height: 16.h),
           Text(
-            title,
-            style: titleStyle ?? AppStyles.assessmentTitle,
+            widget.title,
+            style: widget.titleStyle ?? AppStyles.assessmentTitle,
             textAlign: TextAlign.center,
           ),
         ],
@@ -80,9 +94,9 @@ class ScreenHeader extends StatelessWidget {
       width: 360.w,
       height: 254.h,
       decoration: BoxDecoration(
-        image: backgroundImage != null
+        image: widget.backgroundImage != null
             ? DecorationImage(
-                image: AssetImage(backgroundImage!),
+                image: AssetImage(widget.backgroundImage!),
                 fit: BoxFit.cover,
               )
             : null,
@@ -103,9 +117,9 @@ class ScreenHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (showStatusBar) _buildStatusBar(context),
+              if (widget.showStatusBar) _buildStatusBar(context),
               const Spacer(),
-              Text(title, style: titleStyle ?? AppStyles.title),
+              Text(widget.title, style: widget.titleStyle ?? AppStyles.title),
             ],
           ),
         ),
@@ -114,18 +128,29 @@ class ScreenHeader extends StatelessWidget {
   }
 
   Widget _buildStatusBar(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        if (showBackButton)
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Image.asset(
-              AppAssets.backButtonIcon,
-              width: 30.w,
-              height: 30.h,
-              color: Colors.white,
-            ),
-          ),
+        Row(
+          children: [
+            if (widget.showBackButton)
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Image.asset(
+                  AppAssets.backButtonIcon,
+                  width: 30.w,
+                  height: 30.h,
+                  color: Colors.white,
+                ),
+              ),
+            if (widget.showSearchBar) ...[
+              const Spacer(),
+              CustomSearchBar(
+                controller: _searchController,
+                onChanged: widget.onSearch,
+              ),
+            ],
+          ],
+        ),
       ],
     );
   }

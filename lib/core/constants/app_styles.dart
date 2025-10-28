@@ -37,6 +37,14 @@ class AppStyles {
     letterSpacing: 2.sp,
   );
 
+  static final TextStyle loginButton = TextStyle(
+    fontFamily: AppFonts.inter,
+    fontSize: 13.sp,
+    color: AppColors.primaryText,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.05,
+  );
+
   static final TextStyle inputLabel = TextStyle(
     color: AppColors.primaryText,
     fontFamily: AppFonts.inter,

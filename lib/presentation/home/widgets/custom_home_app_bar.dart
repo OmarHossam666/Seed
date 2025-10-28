@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:seed/core/constants/app_assets.dart';
 import 'package:seed/core/constants/app_colors.dart';
 import 'package:seed/core/constants/app_strings.dart';
 import 'package:seed/core/constants/app_styles.dart';
+import 'package:seed/core/helpers/spacing.dart';
 import 'package:seed/presentation/home/widgets/profile_sheet.dart';
 
 class CustomHomeAppBar extends StatelessWidget {
@@ -75,14 +78,60 @@ class CustomHomeAppBar extends StatelessWidget {
               ),
             ),
             SizedBox(width: 12.w),
-            Icon(
-              Icons.notifications_outlined,
-              color: AppColors.primary,
-              size: 24.sp,
+            IconButton(
+              onPressed: () => showNotificationsDialog(context),
+              icon: Icon(
+                Icons.notifications_outlined,
+                color: AppColors.primary,
+                size: 24.sp,
+              ),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  void showNotificationsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          contentPadding: EdgeInsetsGeometry.all(32.r),
+          constraints: BoxConstraints(maxWidth: 285.w, maxHeight: 350.h),
+          backgroundColor: AppColors.background,
+          content: Column(
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  onPressed: () => context.pop(),
+                  icon: Image.asset(
+                    AppAssets.cancelIcon,
+                    width: 24.w,
+                    height: 47.h,
+                    semanticLabel: 'Close notifications dialog',
+                  ),
+                ),
+              ),
+              getVerticalSpacing(8),
+              Image.asset(
+                AppAssets.noMessagesIcon,
+                width: 100.w,
+                height: 100.h,
+                semanticLabel: 'No notifications illustration',
+              ),
+              getVerticalSpacing(30),
+              Text(
+                AppStrings.noMessagesYet,
+                style: AppStyles.homeSectionTitle.copyWith(
+                  color: const Color(0xFF093EA0),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

@@ -29,6 +29,7 @@ class WeeklyTestScreen extends StatelessWidget {
               title: AppStrings.weeklyTest,
               showBackButton: true,
               showStatusBar: true,
+              showSearchBar: true,
             ),
             Expanded(
               child: SingleChildScrollView(

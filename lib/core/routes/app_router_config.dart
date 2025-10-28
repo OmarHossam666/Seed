@@ -1,7 +1,10 @@
 import 'package:go_router/go_router.dart';
 import 'package:seed/core/routes/app_routes.dart';
 import 'package:seed/features/assessment/presentation/screens/test_your_skills_screen.dart';
+import 'package:seed/features/authentication/presentation/screens/create_new_password_screen.dart';
+import 'package:seed/features/authentication/presentation/screens/forget_your_password_screen.dart';
 import 'package:seed/features/authentication/presentation/screens/login_screen.dart';
+import 'package:seed/features/authentication/presentation/screens/otp_verification_screen.dart';
 import 'package:seed/presentation/essay/screens/essays_screen.dart';
 import 'package:seed/presentation/face_id/screens/face_id_screen.dart';
 import 'package:seed/presentation/home/screens/home_screen.dart';
@@ -28,6 +31,18 @@ class AppRouterConfig {
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.forgotPassword,
+        builder: (context, state) => const ForgetYourPasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.createNewPassword,
+        builder: (context, state) => const CreateNewPasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.otpVerification,
+        builder: (context, state) => const OtpVerificationScreen(),
       ),
       GoRoute(
         path: AppRoutes.signup,

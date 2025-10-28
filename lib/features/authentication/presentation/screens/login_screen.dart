@@ -16,6 +16,7 @@ import 'package:seed/core/widgets/enhanced_text_field.dart';
 import 'package:seed/features/authentication/presentation/bloc/authentication_bloc.dart';
 import 'package:seed/features/authentication/presentation/bloc/authentication_event.dart';
 import 'package:seed/features/authentication/presentation/bloc/authentication_state.dart';
+import 'package:seed/features/authentication/presentation/widgets/login_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -158,7 +159,9 @@ class _LoginScreenState extends State<LoginScreen>
                                     getVerticalSpacing(16),
                                     // Forgot Password
                                     _buildForgotPassword(),
-                                    getVerticalSpacing(82),
+                                    getVerticalSpacing(23),
+                                    const LoginButton(),
+                                    getVerticalSpacing(23),
                                     // Sign Up Link
                                     _buildSignUpLink(),
                                     getVerticalSpacing(60),
@@ -247,6 +250,8 @@ class _LoginScreenState extends State<LoginScreen>
               style: AppStyles.forgotPassword.copyWith(
                 color: AppColors.background,
               ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => context.push(AppRoutes.forgotPassword),
             ),
           ],
         ),

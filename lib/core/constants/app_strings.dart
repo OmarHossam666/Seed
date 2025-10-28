@@ -19,6 +19,22 @@ class AppStrings {
   static const String dontHaveAnAccount = 'Don\'t have an account? ';
   static const String signUp = 'Sign Up';
 
+  // Forget Your Password Screen
+  static const String forgotYourPassword = 'Forgot Your Password?';
+  static const String sendEmail = 'Send Email';
+  static const String resendEmail = 'Re-Send Email';
+
+  // Create New Password Screen
+  static const String reenterYourPassword = 'Re-enter your password';
+
+  // OTP Verification Screen
+  static const String otpVerification = 'OTP Verification';
+  static const String otpSubtitle =
+      'Enter the verification code we just sent on your email address.';
+  static const String verify = 'Verify';
+  static const String didntReceiveCode = "Didn't received code? ";
+  static const String resend = 'Resend';
+
   // Sign Up Screen
   static const String enterYourName = 'enter your name';
   static const String enterYourAge = 'enter your age';
@@ -69,6 +85,7 @@ class AppStrings {
   static const String jobTitle = 'Jobs';
   static const String whatYouWillLearn = 'What you will learn';
   static const String link = '/link';
+  static const String noMessagesYet = 'No messages yet';
 
   // Weekly Test Screen
   static const String weeklyTest = 'Weekly Test';

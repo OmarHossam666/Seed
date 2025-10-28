@@ -31,5 +31,11 @@ class AppAssets {
   static const String jobsImage = '$_imagePath/jobs_image.png';
   static const String learningImage = '$_imagePath/learning_image.png';
   static const String weeklyTestImage = '$_imagePath/weekly_test_image.png';
-  static const String learningScreenVideoImage = '$_imagePath/learning_screen_video_image.png';
+  static const String learningScreenVideoImage =
+      '$_imagePath/learning_screen_video_image.png';
+  static const String forgetYourPasswordIcon =
+      '$_imagePath/forget_your_password_icon.png';
+  static const String greenCheckMark = '$_imagePath/green_check_mark.png';
+  static const String cancelIcon = '$_imagePath/cancel_icon.png';
+  static const String noMessagesIcon = '$_imagePath/no_messages_icon.png';
 }

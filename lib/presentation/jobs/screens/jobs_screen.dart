@@ -25,6 +25,7 @@ class JobsScreen extends StatelessWidget {
             ScreenHeader(
               backgroundImage: AppAssets.jobsImage,
               title: AppStrings.jobTitle,
+              showSearchBar: true,
             ),
             Expanded(
               child: SingleChildScrollView(

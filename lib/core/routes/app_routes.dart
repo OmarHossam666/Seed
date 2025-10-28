@@ -4,6 +4,10 @@ class AppRoutes {
   static const String faceId = '/faceId';
   static const String splash = '/splash';
   static const String login = '/login';
+  static const String forgotPassword = '/forgotPassword';
+  static const String createNewPassword = '/createNewPassword';
+  static const String otpVerification = '/otpVerification';
+  static const String passwordConfirmation = '/passwordConfirmation';
   static const String signup = '/signup';
   static const String test = '/test';
   static const String mcq = '/mcq';

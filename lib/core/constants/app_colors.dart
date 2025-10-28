@@ -12,6 +12,9 @@ class AppColors {
   static const Color buttonBorder = Color(0xFFD9D9D9);
   static const Color progressBackground = Color(0xFFE8E8E8);
   static const Color readyButtonBackground = Color(0xFFE0E0E0);
+  static const Color white = Colors.white;
+  static const Color black = Colors.black;
+  static const Color error = Colors.red;
 
   static const List<Color> gradient = [
     Color(0xFF4D64E9),

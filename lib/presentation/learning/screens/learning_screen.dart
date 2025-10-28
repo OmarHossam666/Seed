@@ -27,17 +27,28 @@ class LearningScreen extends StatelessWidget {
               title: AppStrings.learning,
               showBackButton: true,
               showStatusBar: true,
+              showSearchBar: true,
             ),
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     getVerticalSpacing(24),
-                    _buildRecommendedSection(),
+                    _buildHeaderSection('Recommended', 'playlists for you'),
                     getVerticalSpacing(24),
                     _buildVideoPlaylist(),
+                    getVerticalSpacing(24),
+                    _buildHeaderSection('Your', 'History'),
+                    getVerticalSpacing(24),
+                    _buildVideoPlaylist(isRecommended: false),
+                    getVerticalSpacing(24),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text('View More', style: AppStyles.welcomeTitle),
+                    ),
+                    getVerticalSpacing(24),
                   ],
                 ),
               ),
@@ -48,27 +59,46 @@ class LearningScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecommendedSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildHeaderSection(String title, String subtitle) {
+    return Row(
       children: [
-        Text('Recommended', style: AppStyles.homeSectionTitle),
-        Text(
-          'playlists for you',
-          style: AppStyles.homeSectionTitle.copyWith(color: AppColors.primary),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: AppStyles.homeSectionTitle),
+            Text(
+              subtitle,
+              style: AppStyles.homeSectionTitle.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
+          ],
+        ),
+        const Spacer(),
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.refresh, color: Colors.grey, size: 35.sp),
         ),
       ],
     );
   }
 
-  Widget _buildVideoPlaylist() {
+  Widget _buildVideoPlaylist({bool isRecommended = true}) {
     final playlists = _getPlaylistData();
     return Column(
-      children: playlists.map((playlist) => _buildVideoCard(playlist)).toList(),
+      children: playlists
+          .map(
+            (playlist) =>
+                _buildVideoCard(playlist, isRecommended: isRecommended),
+          )
+          .toList(),
     );
   }
 
-  Widget _buildVideoCard(Map<String, String> playlist) {
+  Widget _buildVideoCard(
+    Map<String, String> playlist, {
+    bool isRecommended = true,
+  }) {
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       decoration: BoxDecoration(
@@ -128,11 +158,14 @@ class LearningScreen extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: AppColors.gradient,
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
+              color: isRecommended ? null : Colors.grey,
+              gradient: isRecommended
+                  ? LinearGradient(
+                      colors: AppColors.gradient,
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    )
+                  : null,
               borderRadius: BorderRadius.vertical(
                 bottom: Radius.circular(16.r),
               ),
