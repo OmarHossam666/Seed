@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:seed/core/error/failures.dart';
 import 'package:seed/features/assessment/domain/entities/assessment.dart';
+import 'package:seed/features/assessment/domain/entities/question_dto.dart';
 import 'package:seed/features/assessment/domain/repositories/assessment_repository.dart';
 
 /// Use case for setting an assessment as completed
@@ -55,5 +56,18 @@ class GetAllAssessments {
 
   Either<Failure, List<Assessment>> call() {
     return repository.getAllAssessments();
+  }
+}
+
+class FetchQuestions {
+  final IAssessmentRepository repository;
+
+  FetchQuestions(this.repository);
+
+  Future<Either<Failure, List<QuestionDto>>> call(
+    String category,
+    String difficulty,
+  ) async {
+    return await repository.fetchQuestions(category, difficulty);
   }
 }

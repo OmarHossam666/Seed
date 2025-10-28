@@ -75,7 +75,7 @@ Future<void> initializeDependencies() async {
 
   // Feature: Assessment - Repository
   getIt.registerLazySingleton<IAssessmentRepository>(
-    () => AssessmentRepositoryImpl(getIt<IPreferencesRepository>()),
+    () => AssessmentRepositoryImpl(getIt<IPreferencesRepository>(), getIt()),
   );
 
   // Feature: Assessment - Use Cases
@@ -92,6 +92,7 @@ Future<void> initializeDependencies() async {
       setAssessmentCompleted: getIt(),
       getAllAssessments: getIt(),
       resetProgress: getIt(),
+      fetchQuestions: getIt(),
     ),
   );
 }

@@ -33,3 +33,17 @@ class ResetAllAssessments extends AssessmentEvent {
 class CheckAllAssessmentsCompleted extends AssessmentEvent {
   const CheckAllAssessmentsCompleted();
 }
+
+/// Event to fetch questions based on category and difficulty
+class FetchQuestionsEvent extends AssessmentEvent {
+  final String category;
+  final String difficulty;
+
+  const FetchQuestionsEvent({
+    required this.category,
+    required this.difficulty,
+  });
+
+  @override
+  List<Object?> get props => [category, difficulty];
+}
